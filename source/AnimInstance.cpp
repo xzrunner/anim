@@ -261,18 +261,18 @@ void AnimInstance::UpdateCursor()
 
 		assert(cursor < frame_num && frame_num > 0);
 		const AnimTemplate::Frame* first_frame_ptr = &layer_ptr->frames[0];
-		if (cursor >= 0 && cursor < frame_num && (first_frame_ptr + cursor)->frame_idx == frame + 1) {
+		if (cursor >= 0 && cursor < frame_num && (first_frame_ptr + cursor)->frame_idx == frame) {
 			*layer_cursor_update_ptr = true;
 		} else {
-			while (frame_num > 1 && cursor < frame_num - 1 && (first_frame_ptr + cursor + 1)->frame_idx <= frame + 1) {
+			while (frame_num > 1 && cursor < frame_num - 1 && (first_frame_ptr + cursor + 1)->frame_idx <= frame) {
 				++cursor;
 				*layer_cursor_update_ptr = true;
 			}
 		}
-		if (cursor == 0 && frame + 1 < (first_frame_ptr + cursor)->frame_idx) {
+		if (cursor == 0 && frame < (first_frame_ptr + cursor)->frame_idx) {
 			cursor = -1;
 		}
-		if (cursor == frame_num - 1 && frame + 1 > (first_frame_ptr + cursor)->frame_idx) {
+		if (cursor == frame_num - 1 && frame > (first_frame_ptr + cursor)->frame_idx) {
 			cursor = INT_MAX;
 		}
 
@@ -339,7 +339,7 @@ void AnimInstance::LoadCurrSpritesImpl()
 
 				assert(actor.slot == next_frame.items[actor.next].slot);
 				auto& tween = m_slots[actor.slot];
-				int time = ctrl_frame + 1 - frame.frame_idx;
+				int time = ctrl_frame - frame.frame_idx;
 				int tot_time = next_frame.frame_idx - frame.frame_idx;
 				const AnimTemplate::Lerp& lerp = m_template->m_lerps[actor.lerp];
 				LoadSprLerpData(tween, lerp, time);
