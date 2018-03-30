@@ -64,6 +64,7 @@ void AnimInstance::Refresh()
 {
 	ResetLayerCursor();
 
+	m_slots.clear();
 	m_slots.reserve(m_template->m_slots.size());
 	for (auto& node : m_template->m_slots) {
 		m_slots.push_back(node->Clone());
