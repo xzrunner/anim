@@ -103,22 +103,25 @@ bool AnimInstance::Update(bool loop, float interval, int fps)
 	return dirty;
 }
 
-bool AnimInstance::SetFrame(int frame_idx, int fps)
+bool AnimInstance::SetFrame(int frame_idx, int fps, bool force)
 {
-	if (frame_idx == m_ctrl.GetFrame()) {
+	if (!force && frame_idx == m_ctrl.GetFrame()) {
 		return false;
 	}
 
 	int frame_copy = frame_idx;
 	frame_idx = frame_idx % (m_template->GetMaxFrameIdx() + 1);
 
-	if (frame_idx < m_ctrl.GetFrame()) {
-		ResetLayerCursor();
+	if (force || frame_idx != m_ctrl.GetFrame())
+	{
+		if (frame_idx < m_ctrl.GetFrame()) {
+			ResetLayerCursor();
+		}
+
+		m_ctrl.SetFrame(frame_idx, fps);
+
+		LoadCurrSprites();
 	}
-
-	m_ctrl.SetFrame(frame_idx, fps);
-
-	LoadCurrSprites();
 
 	SetChildrenFrame(frame_copy, fps);
 

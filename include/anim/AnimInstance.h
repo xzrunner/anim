@@ -22,7 +22,7 @@ public:
 	void Refresh();
 	
 	bool Update(bool loop = true, float interval = 0, int fps = 30);
-	bool SetFrame(int frame_idx, int fps);
+	bool SetFrame(int frame_idx, int fps, bool force = false);
 
 	void TraverseCurrNodes(std::function<bool(const n0::SceneNodePtr&)> func) const;
 
