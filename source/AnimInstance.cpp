@@ -80,7 +80,9 @@ bool AnimInstance::SetFrame(int frame_idx, bool force)
 	}
 
 	int frame_copy = frame_idx;
-	frame_idx = frame_idx % (m_template->GetMaxFrameIdx() + 1);
+
+	GD_ASSERT(frame_idx >= 0 && frame_idx <= m_template->GetMaxFrameIdx(), "err frame_idx");
+//	frame_idx = frame_idx % (m_template->GetMaxFrameIdx() + 1);
 
 	if (force || frame_idx != m_ctrl.GetFrame())
 	{
