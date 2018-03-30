@@ -27,6 +27,9 @@ public:
 	int GetMaxFrameIdx() const;
 
 	KeyFrame* GetCurrKeyFrame(int frame_idx) const;
+	KeyFrame* GetNextKeyFrame(int frame_idx) const;
+	KeyFrame* GetPrevKeyFrame(int frame_idx) const;
+	KeyFrame* GetEndFrame() const;
 
 	const std::vector<KeyFramePtr>& GetAllKeyFrames() { return m_frames; }
 
@@ -35,7 +38,7 @@ public:
 	void InsertNullFrame(int frame_idx);
 	void RemoveNullFrame(int frame_idx);
 
-	void InsertKeyFrame(int frame_idx);
+	void InsertKeyFrame(KeyFramePtr& frame);
 	void RemoveKeyFrame(int frame_idx);
 
 public:

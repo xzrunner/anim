@@ -1,6 +1,8 @@
 #include "anim/Layer.h"
 #include "anim/KeyFrame.h"
 
+#include <guard/check.h>
+
 #include <algorithm>
 
 namespace
@@ -120,6 +122,27 @@ KeyFrame* Layer::GetCurrKeyFrame(int frame_idx) const
 	return itr->get();
 }
 
+KeyFrame* Layer::GetNextKeyFrame(int frame_idx) const
+{
+	auto itr = std::upper_bound(m_frames.begin(), m_frames.end(), frame_idx, FrameLessThan());
+	return itr == m_frames.end() ? nullptr : itr->get();
+}
+
+KeyFrame* Layer::GetPrevKeyFrame(int frame_idx) const
+{
+	auto itr = std::lower_bound(m_frames.begin(), m_frames.end(), frame_idx, FrameLessThan());
+	if (itr == m_frames.end() || itr == m_frames.begin()) {
+		return nullptr;
+	} else {
+		return (--itr)->get();
+	}
+}
+
+KeyFrame* Layer::GetEndFrame() const
+{
+	return m_frames.empty() ? nullptr : m_frames.back().get();
+}
+
 bool Layer::IsKeyFrame(int frame_idx) const
 {
 	auto itr = std::lower_bound(m_frames.begin(), m_frames.end(), frame_idx, FrameLessThan());
@@ -142,9 +165,8 @@ void Layer::RemoveNullFrame(int frame_idx)
 	}
 }
 
-void Layer::InsertKeyFrame(int frame_idx)
+void Layer::InsertKeyFrame(KeyFramePtr& frame)
 {
-	auto frame = std::make_unique<KeyFrame>(frame_idx);
 	m_frames.insert(std::upper_bound(m_frames.begin(), m_frames.end(),
 		frame, FrameLessThan()), std::move(frame));
 }
