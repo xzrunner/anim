@@ -1,4 +1,5 @@
 #include "anim/AnimTemplate.h"
+#include "anim/AnimInstance.h"
 #include "anim/Layer.h"
 #include "anim/KeyFrame.h"
 #include "anim/Utility.h"
@@ -40,6 +41,13 @@ void AnimTemplate::Build(const std::vector<LayerPtr>& layers)
 	ConnectItems(layers);
 	LoadLerpData(layers);
 	CreateSprSlots(layers);
+
+	RefreshInstances();
+}
+
+void AnimTemplate::AddInstance(const std::shared_ptr<AnimInstance>& instance)
+{
+	m_instances.push_back(instance);
 }
 
 void AnimTemplate::SetCountNum(const std::vector<LayerPtr>& layers)
@@ -198,7 +206,7 @@ void AnimTemplate::CreateSprSlots(const std::vector<LayerPtr>& layers)
 				}
 				int slot = m_slots.size();
 				
-				m_slots.push_back(src_nodes[iitem]->Clone());
+				m_slots.push_back(src_nodes[iitem]);
 				item.slot = slot;
 
 				Item* ptr = &item;
@@ -209,6 +217,20 @@ void AnimTemplate::CreateSprSlots(const std::vector<LayerPtr>& layers)
 					ptr->slot = slot;
 				}
 			}
+		}
+	}
+}
+
+void AnimTemplate::RefreshInstances()
+{
+	for (auto itr = m_instances.begin(); itr != m_instances.end(); )
+	{
+		auto inst = itr->lock();
+		if (inst) {
+			inst->Build();
+			++itr;
+		} else {
+			itr = m_instances.erase(itr);
 		}
 	}
 }

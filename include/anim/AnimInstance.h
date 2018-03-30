@@ -12,21 +12,19 @@
 namespace anim
 {
 
-class AnimInstance
+class AnimInstance : boost::noncopyable
 {
 public:
-	AnimInstance(const std::shared_ptr<const AnimTemplate>& anim_temp);
-	AnimInstance(const AnimInstance& inst);
-	AnimInstance& operator = (const AnimInstance& inst);
+	AnimInstance(const std::shared_ptr<AnimTemplate>& anim_temp);
 
-	void Refresh();
+	void Build();
 	
-	bool Update(bool loop = true, float interval = 0, int fps = 30);
-	bool SetFrame(int frame_idx, int fps, bool force = false);
+	bool Update(bool loop = true, float interval = 0);
+	bool SetFrame(int frame_idx, bool force = false);
 
 	void TraverseCurrNodes(std::function<bool(const n0::SceneNodePtr&)> func) const;
 
-	const std::shared_ptr<const AnimTemplate>& GetAnimTemplate() const {
+	const std::shared_ptr<AnimTemplate>& GetAnimTemplate() const {
 		return m_template;
 	}
 
@@ -36,7 +34,7 @@ public:
 	static void LoadSprLerpData(const n0::SceneNodePtr& node, const AnimTemplate::Lerp& lerp, int time);
 
 private:
-	bool UpdateFrameCursor(bool loop, float interval, int fps, bool reset_cursor);
+	bool UpdateFrameCursor(bool loop, float interval, bool reset_cursor);
 
 	void ResetLayerCursor();
 
@@ -45,12 +43,12 @@ private:
 	void LoadCurrSpritesImpl();
 	bool UpdateChildren();
 
-	void SetChildrenFrame(int frame, int fps);
+	void SetChildrenFrame(int frame);
 
 	void UpdateSlotsVisible();
 
 private:
-	std::shared_ptr<const AnimTemplate> m_template = nullptr;
+	std::shared_ptr<AnimTemplate> m_template = nullptr;
 
 	PlayCtrl m_ctrl;
 
@@ -61,6 +59,8 @@ private:
 
 	std::vector<int> m_curr;
 	int              m_curr_num;
+
+	int m_fps;
 
 }; // AnimInstance
 

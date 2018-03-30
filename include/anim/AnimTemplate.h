@@ -13,6 +13,8 @@
 namespace anim
 {
 
+class AnimInstance;
+
 class AnimTemplate : boost::noncopyable
 {
 public:
@@ -29,12 +31,17 @@ public:
 		return m_slots;
 	}
 
+	void AddInstance(const std::shared_ptr<AnimInstance>& instance);
+	bool OnlyOneInstance() const { return m_instances.size() == 1; }
+
 private:
 	void SetCountNum(const std::vector<LayerPtr>& layers);
 	void FillingLayers(const std::vector<LayerPtr>& layers);
 	void ConnectItems(const std::vector<LayerPtr>& layers);
 	void LoadLerpData(const std::vector<LayerPtr>& layers);
 	void CreateSprSlots(const std::vector<LayerPtr>& layers);
+
+	void RefreshInstances();
 
 	static void CalcDeltaColor(const pt2::Color& begin, 
 		const pt2::Color& end, int time, float* ret);
@@ -81,6 +88,8 @@ private:
 
 	int m_max_frame_idx;
 	int m_max_item_num;
+
+	std::vector<std::weak_ptr<AnimInstance>> m_instances;
 
 	friend class AnimInstance;
 

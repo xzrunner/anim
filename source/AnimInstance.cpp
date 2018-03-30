@@ -10,64 +10,31 @@
 namespace anim
 {
 
-AnimInstance::AnimInstance(const std::shared_ptr<const AnimTemplate>& anim_temp)
+AnimInstance::AnimInstance(const std::shared_ptr<AnimTemplate>& anim_temp)
 	: m_template(anim_temp)
 	, m_curr_num(0)
+	, m_fps(30)
 {
-	Refresh();
+	Build();
 }
 
-AnimInstance::AnimInstance(const AnimInstance& inst)
-	: m_template(inst.m_template)
-	, m_ctrl(inst.m_ctrl)
-	, m_layer_cursor(inst.m_layer_cursor)
-	, m_layer_cursor_update(inst.m_layer_cursor_update)
-	, m_curr(inst.m_curr)
-	, m_curr_num(inst.m_curr_num)
-{
-	m_slots.reserve(m_template->m_slots.size());
-	for (auto& node : m_template->m_slots) {
-		m_slots.push_back(node->Clone());
-	}
-
-	UpdateSlotsVisible();
-}
-
-AnimInstance& AnimInstance::operator = (const AnimInstance& inst)
-{
-	if (&inst == this) {
-		return *this;
-	}
-
-	m_template = inst.m_template;
-
-	m_ctrl = inst.m_ctrl;
-
-	m_layer_cursor = inst.m_layer_cursor;
-	m_layer_cursor_update = inst.m_layer_cursor_update;
-
-	m_slots.clear();
-	m_slots.reserve(m_template->m_slots.size());
-	for (auto& node : m_template->m_slots) {
-		m_slots.push_back(node->Clone());
-	}
-
-	m_curr = inst.m_curr;
-	m_curr_num = inst.m_curr_num;
-
-	UpdateSlotsVisible();
-
-	return *this;
-}
-
-void AnimInstance::Refresh()
+void AnimInstance::Build()
 {
 	ResetLayerCursor();
 
 	m_slots.clear();
 	m_slots.reserve(m_template->m_slots.size());
-	for (auto& node : m_template->m_slots) {
-		m_slots.push_back(node->Clone());
+	if (m_template->OnlyOneInstance())
+	{
+		for (auto& node : m_template->m_slots) {
+			m_slots.push_back(node);
+		}
+	}
+	else
+	{
+		for (auto& node : m_template->m_slots) {
+			m_slots.push_back(node->Clone());
+		}
 	}
 
 	m_curr.clear();
@@ -78,19 +45,21 @@ void AnimInstance::Refresh()
 	m_curr_num = 0;
 
 	UpdateSlotsVisible();
+
+	SetFrame(m_ctrl.GetFrame(), true);
 }
 
-bool AnimInstance::Update(bool loop, float interval, int fps)
+bool AnimInstance::Update(bool loop, float interval)
 {
 	if (!m_ctrl.IsActive()) {
 		return UpdateChildren();
 	}
 
-	if (!m_ctrl.Update(fps)) {
+	if (!m_ctrl.Update(m_fps)) {
 		return false;
 	}
 
-	bool dirty = UpdateFrameCursor(loop, interval, fps, true);
+	bool dirty = UpdateFrameCursor(loop, interval, true);
 
 	// update curr frame
 	if (dirty) {
@@ -104,7 +73,7 @@ bool AnimInstance::Update(bool loop, float interval, int fps)
 	return dirty;
 }
 
-bool AnimInstance::SetFrame(int frame_idx, int fps, bool force)
+bool AnimInstance::SetFrame(int frame_idx, bool force)
 {
 	if (!force && frame_idx == m_ctrl.GetFrame()) {
 		return false;
@@ -119,12 +88,12 @@ bool AnimInstance::SetFrame(int frame_idx, int fps, bool force)
 			ResetLayerCursor();
 		}
 
-		m_ctrl.SetFrame(frame_idx, fps);
+		m_ctrl.SetFrame(frame_idx, m_fps);
 
 		LoadCurrSprites();
 	}
 
-	SetChildrenFrame(frame_copy, fps);
+	SetChildrenFrame(frame_copy);
 
 	return true;
 }
@@ -170,12 +139,12 @@ void AnimInstance::LoadSprLerpData(const n0::SceneNodePtr& node, const AnimTempl
 	}
 }
 
-bool AnimInstance::UpdateFrameCursor(bool loop, float interval, int fps, bool reset_cursor)
+bool AnimInstance::UpdateFrameCursor(bool loop, float interval, bool reset_cursor)
 {
 	bool update = false;
 	int curr_frame = m_ctrl.GetFrame();
 	int max_frame = m_template->GetMaxFrameIdx();
-	int loop_max_frame = static_cast<int>(max_frame + interval * fps);
+	int loop_max_frame = static_cast<int>(max_frame + interval * m_fps);
 	if (loop) 
 	{
 		if (curr_frame <= max_frame) 
@@ -185,7 +154,7 @@ bool AnimInstance::UpdateFrameCursor(bool loop, float interval, int fps, bool re
 		else if (curr_frame > max_frame && curr_frame <= loop_max_frame) 
 		{
 			curr_frame = 0;
-			m_ctrl.SetFrame(0, fps);
+			m_ctrl.SetFrame(0, m_fps);
 			update = true;
 			if (reset_cursor) {
 				ResetLayerCursor();
@@ -194,7 +163,7 @@ bool AnimInstance::UpdateFrameCursor(bool loop, float interval, int fps, bool re
 		else 
 		{
 			curr_frame = 0;
-			m_ctrl.SetFrame(0, fps);
+			m_ctrl.SetFrame(0, m_fps);
 			update = true;
 			if (reset_cursor) {
 				ResetLayerCursor();
@@ -409,7 +378,7 @@ bool AnimInstance::UpdateChildren()
 	return dirty;
 }
 
-void AnimInstance::SetChildrenFrame(int frame, int fps)
+void AnimInstance::SetChildrenFrame(int frame)
 {
 	//if (m_layer_cursor.empty()) {
 	//	return;
