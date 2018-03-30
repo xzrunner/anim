@@ -9,7 +9,7 @@ namespace anim
 
 int Utility::GetMaxFrame(const std::vector<LayerPtr>& layers)
 {
-	int max_frame = -1;
+	int max_frame = 0;
 	for (auto& layer : layers)
 	{
 		auto& frames = layer->GetAllKeyFrames();
