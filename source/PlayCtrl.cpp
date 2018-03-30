@@ -11,7 +11,7 @@ namespace anim
 {
 
 PlayCtrl::PlayCtrl()
-	: m_frame(-1)
+	: m_frame(0)
 	, m_start_time(0)
 	, m_curr_time(0)
 	, m_stop_time(0)
