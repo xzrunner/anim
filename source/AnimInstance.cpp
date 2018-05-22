@@ -1,8 +1,9 @@
 #include "anim/AnimInstance.h"
 
-#include <ee0/CompNodeEditor.h>
-
 #include <node0/SceneNode.h>
+#include <node0/CompFlags.h>
+#include <node0/NodeFlags.h>
+#include <node0/NodeFlagsHelper.h>
 #include <node2/UpdateSystem.h>
 #include <node2/CompTransform.h>
 #include <node2/CompColorCommon.h>
@@ -419,11 +420,9 @@ void AnimInstance::SetChildrenFrame(int frame)
 
 void AnimInstance::UpdateSlotsVisible()
 {
-	if (!m_slots.empty())
-	{
+	if (!m_slots.empty()) {
 		for (auto& node : m_slots) {
-			auto& ceditor = node->GetUniqueComp<ee0::CompNodeEditor>();
-			ceditor.SetVisible(false);
+			n0::NodeFlagsHelper::SetFlag<n0::NodeNotVisible>(*node, true);
 		}
 	}
 
@@ -431,8 +430,7 @@ void AnimInstance::UpdateSlotsVisible()
 	{
 		int* curr = &m_curr[0];
 		for (int i = 0; i < m_curr_num; ++i, ++curr) {
-			auto& ceditor = m_slots[*curr]->GetUniqueComp<ee0::CompNodeEditor>();
-			ceditor.SetVisible(true);
+			n0::NodeFlagsHelper::SetFlag<n0::NodeNotVisible>(*m_slots[*curr], false);
 		}
 	}
 }
