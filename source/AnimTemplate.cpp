@@ -4,11 +4,9 @@
 #include "anim/KeyFrame.h"
 #include "anim/Utility.h"
 
-// todo
-#include <ee0/CompNodeEditor.h>
-
 #include <guard/check.h>
 #include <node0/SceneNode.h>
+#include <node0/CompIdentity.h>
 #include <node2/CompColorCommon.h>
 #include <node2/CompColorMap.h>
 #include <node2/CompTransform.h>
@@ -52,10 +50,10 @@ void AnimTemplate::AddInstance(const std::shared_ptr<AnimInstance>& instance)
 
 void AnimTemplate::SetCountNum(const std::vector<LayerPtr>& layers)
 {
-	for (auto& layer : layers) 
+	for (auto& layer : layers)
 	{
 		int max_count = -1;
-		for (auto& frame : layer->GetAllKeyFrames()) 
+		for (auto& frame : layer->GetAllKeyFrames())
 		{
 			int count = frame->GetAllNodes().size();
 			if (count > max_count) {
@@ -70,7 +68,7 @@ void AnimTemplate::FillingLayers(const std::vector<LayerPtr>& layers)
 {
 	m_layers.clear();
 	m_layers.resize(layers.size());
-	for (int ilayer = 0, nlayer = layers.size(); ilayer < nlayer; ++ilayer) 
+	for (int ilayer = 0, nlayer = layers.size(); ilayer < nlayer; ++ilayer)
 	{
 		auto& src_layer = layers[ilayer];
 		Layer& dst_layer = m_layers[ilayer];
@@ -101,7 +99,7 @@ void AnimTemplate::FillingLayers(const std::vector<LayerPtr>& layers)
 
 void AnimTemplate::ConnectItems(const std::vector<LayerPtr>& layers)
 {
-	for (int ilayer = 0, nlayer = m_layers.size(); ilayer < nlayer; ++ilayer) 
+	for (int ilayer = 0, nlayer = m_layers.size(); ilayer < nlayer; ++ilayer)
 	{
 		Layer& layer = m_layers[ilayer];
 		if (layer.frames.size() <= 1) {
@@ -109,7 +107,7 @@ void AnimTemplate::ConnectItems(const std::vector<LayerPtr>& layers)
 		}
 		auto& src_layer = layers[ilayer];
 		auto& src_frames = src_layer->GetAllKeyFrames();
-		for (int iframe = 0, nframe = layer.frames.size(); iframe < nframe - 1; ++iframe) 
+		for (int iframe = 0, nframe = layer.frames.size(); iframe < nframe - 1; ++iframe)
 		{
 			if (!src_frames[iframe]->GetTween()) {
 				continue;
@@ -117,15 +115,15 @@ void AnimTemplate::ConnectItems(const std::vector<LayerPtr>& layers)
 
 			Frame& curr = layer.frames[iframe];
 			Frame& next = layer.frames[iframe + 1];
-			for (int icurr = 0, ncurr = curr.items.size(); icurr < ncurr; ++icurr) 
+			for (int icurr = 0, ncurr = curr.items.size(); icurr < ncurr; ++icurr)
 			{
-				for (int inext = 0, nnext = next.items.size(); inext < nnext; ++inext) 
+				for (int inext = 0, nnext = next.items.size(); inext < nnext; ++inext)
 				{
 					auto& curr_node = src_frames[iframe]->GetAllNodes()[icurr];
 					auto& next_node = src_frames[iframe+1]->GetAllNodes()[inext];
-					auto& curr_info = curr_node->GetUniqueComp<ee0::CompNodeEditor>();
-					auto& next_info = next_node->GetUniqueComp<ee0::CompNodeEditor>();
-					if (curr_info.GetName() == next_info.GetName())
+					auto& curr_cid = curr_node->GetUniqueComp<n0::CompIdentity>();
+					auto& next_cid = next_node->GetUniqueComp<n0::CompIdentity>();
+					if (curr_cid.GetName() == next_cid.GetName())
 					{
 						curr.items[icurr].next = inext;
 						next.items[inext].prev = icurr;
@@ -140,14 +138,14 @@ void AnimTemplate::ConnectItems(const std::vector<LayerPtr>& layers)
 void AnimTemplate::LoadLerpData(const std::vector<LayerPtr>& layers)
 {
 	m_lerps.clear();
-	for (int ilayer = 0, nlayer = m_layers.size(); ilayer < nlayer; ++ilayer) 
+	for (int ilayer = 0, nlayer = m_layers.size(); ilayer < nlayer; ++ilayer)
 	{
 		auto& src_frames = layers[ilayer]->GetAllKeyFrames();
 		Layer& layer = m_layers[ilayer];
-		for (int iframe = 0, nframe = layer.frames.size(); iframe < nframe; ++iframe) 
+		for (int iframe = 0, nframe = layer.frames.size(); iframe < nframe; ++iframe)
 		{
 			Frame& frame = layer.frames[iframe];
-			for (int iitem = 0, nitem = frame.items.size(); iitem < nitem; ++iitem) 
+			for (int iitem = 0, nitem = frame.items.size(); iitem < nitem; ++iitem)
 			{
 				Item& item = frame.items[iitem];
 				if (item.next == -1) {
@@ -190,28 +188,28 @@ void AnimTemplate::LoadLerpData(const std::vector<LayerPtr>& layers)
 void AnimTemplate::CreateSprSlots(const std::vector<LayerPtr>& layers)
 {
 	m_slots.clear();
-	for (int ilayer = 0, nlayer = m_layers.size(); ilayer < nlayer; ++ilayer) 
+	for (int ilayer = 0, nlayer = m_layers.size(); ilayer < nlayer; ++ilayer)
 	{
 		auto& src_frames = layers[ilayer]->GetAllKeyFrames();
 		Layer& layer = m_layers[ilayer];
-		for (int iframe = 0, nframe = layer.frames.size(); iframe < nframe; ++iframe) 
+		for (int iframe = 0, nframe = layer.frames.size(); iframe < nframe; ++iframe)
 		{
 			auto& src_nodes = src_frames[iframe]->GetAllNodes();
 			Frame& frame = layer.frames[iframe];
-			for (int iitem = 0, nitem = frame.items.size(); iitem < nitem; ++iitem) 
+			for (int iitem = 0, nitem = frame.items.size(); iitem < nitem; ++iitem)
 			{
 				Item& item = frame.items[iitem];
 				if (item.slot != -1) {
 					continue;
 				}
 				int slot = m_slots.size();
-				
+
 				m_slots.push_back(src_nodes[iitem]);
 				item.slot = slot;
 
 				Item* ptr = &item;
 				int idx = iframe;
-				while (ptr->next != -1 && idx < nframe - 1) 
+				while (ptr->next != -1 && idx < nframe - 1)
 				{
 					ptr = &layer.frames[++idx].items[ptr->next];
 					ptr->slot = slot;

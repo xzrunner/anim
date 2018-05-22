@@ -107,7 +107,7 @@ void AnimInstance::TraverseCurrNodes(std::function<bool(const n0::SceneNodePtr&)
 	}
 
 	const int* curr = &m_curr[0];
-	for (int i = 0; i < m_curr_num; ++i, ++curr) 
+	for (int i = 0; i < m_curr_num; ++i, ++curr)
 	{
 		auto& child = m_slots[*curr];
 		if (!func(child)) {
@@ -147,22 +147,13 @@ bool AnimInstance::UpdateFrameCursor(bool loop, float interval, bool reset_curso
 	int curr_frame = m_ctrl.GetFrame();
 	int max_frame = m_template->GetMaxFrameIdx();
 	int loop_max_frame = static_cast<int>(max_frame + interval * m_fps);
-	if (loop) 
+	if (loop)
 	{
-		if (curr_frame <= max_frame) 
+		if (curr_frame <= max_frame)
 		{
 			update = true;
-		} 
-		else if (curr_frame > max_frame && curr_frame <= loop_max_frame) 
-		{
-			curr_frame = 0;
-			m_ctrl.SetFrame(0, m_fps);
-			update = true;
-			if (reset_cursor) {
-				ResetLayerCursor();
-			}
-		} 
-		else 
+		}
+		else if (curr_frame > max_frame && curr_frame <= loop_max_frame)
 		{
 			curr_frame = 0;
 			m_ctrl.SetFrame(0, m_fps);
@@ -171,8 +162,17 @@ bool AnimInstance::UpdateFrameCursor(bool loop, float interval, bool reset_curso
 				ResetLayerCursor();
 			}
 		}
-	} 
-	else 
+		else
+		{
+			curr_frame = 0;
+			m_ctrl.SetFrame(0, m_fps);
+			update = true;
+			if (reset_cursor) {
+				ResetLayerCursor();
+			}
+		}
+	}
+	else
 	{
 		if (curr_frame > max_frame) {
 			curr_frame = max_frame;
@@ -211,7 +211,7 @@ void AnimInstance::UpdateCursor()
 	}
 
 	assert(m_layer_cursor.size() == m_layer_cursor_update.size());
-	
+
 	int frame = m_ctrl.GetFrame();
 	int* layer_cursor_ptr = &m_layer_cursor[0];
 	int* layer_cursor_update_ptr = &m_layer_cursor_update[0];
@@ -294,7 +294,7 @@ void AnimInstance::LoadCurrSpritesImpl()
 		{
 			const AnimTemplate::Item& actor = *actor_ptr;
 			m_curr[m_curr_num++] = actor.slot;
-			if (actor.next != -1) 
+			if (actor.next != -1)
 			{
 				assert(actor.lerp != -1);
 				const AnimTemplate::Frame& next_frame = layer.frames[cursor + 1];
@@ -419,7 +419,7 @@ void AnimInstance::SetChildrenFrame(int frame)
 
 void AnimInstance::UpdateSlotsVisible()
 {
-	if (!m_slots.empty()) 
+	if (!m_slots.empty())
 	{
 		for (auto& node : m_slots) {
 			auto& ceditor = node->GetUniqueComp<ee0::CompNodeEditor>();
@@ -427,7 +427,7 @@ void AnimInstance::UpdateSlotsVisible()
 		}
 	}
 
-	if (!m_curr.empty()) 
+	if (!m_curr.empty())
 	{
 		int* curr = &m_curr[0];
 		for (int i = 0; i < m_curr_num; ++i, ++curr) {
