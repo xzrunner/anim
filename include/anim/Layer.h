@@ -1,6 +1,7 @@
 #pragma once
 
 #include "anim/typedef.h"
+#include "anim/KeyFrame.h"
 
 #include <vector>
 
