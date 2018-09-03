@@ -374,7 +374,7 @@ bool AnimInstance::UpdateChildren()
 	for (int i = 0; i < m_curr_num; ++i, ++curr)
 	{
 		auto& child = m_slots[*curr];
-		if (n2::UpdateSystem::Update(child)) {
+		if (n2::UpdateSystem::Instance()->Update(child)) {
 			dirty = true;
 		}
 	}
