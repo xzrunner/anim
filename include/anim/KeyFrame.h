@@ -26,14 +26,14 @@ public:
 
 	const std::vector<n0::SceneNodePtr>& GetAllNodes() const { return m_nodes; }
 	void SetNodes(const std::vector<n0::SceneNodePtr>& nodes);
-	
+
 private:
 	int m_frame_idx;
 
 	std::vector<n0::SceneNodePtr> m_nodes;
 
 	bool m_tween;
-	
+
 }; // KeyFrame
 
 }

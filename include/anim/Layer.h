@@ -35,7 +35,7 @@ public:
 	const std::vector<KeyFramePtr>& GetAllKeyFrames() { return m_frames; }
 
 	bool IsKeyFrame(int frame_idx) const;
-	 
+
 	void InsertNullFrame(int frame_idx);
 	void RemoveNullFrame(int frame_idx);
 

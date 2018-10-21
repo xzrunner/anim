@@ -26,7 +26,7 @@ void PlayCtrl::SetActive(bool active)
 		return;
 	}
 
-	if (active) 
+	if (active)
 	{
 		float cost = m_curr_time - m_start_time - m_stop_during;
 		if (m_stop_time > 0) {
@@ -35,12 +35,12 @@ void PlayCtrl::SetActive(bool active)
 		}
 		m_curr_time = GlobalClock::Instance()->GetTime();
 		m_start_time = m_curr_time - m_stop_during - cost;
-	} 
-	else 
+	}
+	else
 	{
 		m_stop_time = GlobalClock::Instance()->GetTime();
 	}
-	m_active = active; 
+	m_active = active;
 }
 
 bool PlayCtrl::SetFrame(int frame, int fps)

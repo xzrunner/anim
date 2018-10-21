@@ -43,7 +43,7 @@ private:
 
 	void RefreshInstances();
 
-	static void CalcDeltaColor(const pt2::Color& begin, 
+	static void CalcDeltaColor(const pt2::Color& begin,
 		const pt2::Color& end, int time, float* ret);
 
 private:

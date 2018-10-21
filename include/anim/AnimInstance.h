@@ -18,7 +18,7 @@ public:
 	AnimInstance(const std::shared_ptr<AnimTemplate>& anim_temp);
 
 	void Build();
-	
+
 	bool Update(bool loop = true, float interval = 0);
 	bool SetFrame(int frame_idx, bool force = false);
 
