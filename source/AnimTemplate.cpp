@@ -233,7 +233,7 @@ void AnimTemplate::RefreshInstances()
 	}
 }
 
-void AnimTemplate::CalcDeltaColor(const pt2::Color& begin, const pt2::Color& end, int time, float* ret)
+void AnimTemplate::CalcDeltaColor(const pt0::Color& begin, const pt0::Color& end, int time, float* ret)
 {
 	ret[0] = (end.r - begin.r) / (float)time;
 	ret[1] = (end.g - begin.g) / (float)time;

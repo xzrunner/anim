@@ -3,7 +3,7 @@
 #include <anim/typedef.h>
 
 #include <node0/typedef.h>
-#include <painting2/Color.h>
+#include <painting0/Color.h>
 #include <painting2/SRT.h>
 
 #include <boost/noncopyable.hpp>
@@ -43,15 +43,15 @@ private:
 
 	void RefreshInstances();
 
-	static void CalcDeltaColor(const pt2::Color& begin,
-		const pt2::Color& end, int time, float* ret);
+	static void CalcDeltaColor(const pt0::Color& begin,
+		const pt0::Color& end, int time, float* ret);
 
 private:
 	struct Lerp
 	{
 		pt2::SRT srt, dsrt;
 
-		pt2::Color col_mul, col_add;
+		pt0::Color col_mul, col_add;
 		float dcol_mul[4], dcol_add[4];
 	};
 
